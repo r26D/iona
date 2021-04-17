@@ -194,3 +194,9 @@ See [LICENSE](./LICENSE).
 
 LaTeX is free software, and is not distributed with this (unaffiliated) project.
 Please see the [LaTeX homepage](https://latex-project.org) for more information.
+
+### Installing LaTex on Ubuntu
+
+```bash
+sudo apt-get install texlive texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra lmodern
+```

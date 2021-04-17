@@ -39,7 +39,7 @@ defmodule Iona.Mixfile do
       {:briefly, "~> 0.3"},
       {:dialyxir, "~> 1.0-rc", only: [:dev], runtime: false},
       {:ex_doc, ">= 0.0.0", only: [:dev]},
-      {:credo, "~> 1.1.0", only: [:dev], runtime: false}
+      {:credo, "~> 1.5.5", only: [:dev], runtime: false}
     ]
   end
 
