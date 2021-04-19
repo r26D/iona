@@ -1,0 +1,69 @@
+FROM frolvlad/alpine-glibc:glibc-2.29 AS build
+MAINTAINER Dirk Elmendorf dirk@jobward.app
+
+# Wrapping up the installer from https://yihui.org/tinytex/
+# Based on https://github.com/superruzafa/docker-tinytex
+
+#This docker image is small - (~400MB)
+#kpsewhich -var-value=TEXMFHOME
+#/root/.TinyTeX/texmf-local/tex/latex/local/ <- can be overriding to add in external classes
+
+WORKDIR /root
+
+RUN apk update \
+    && apk --no-cache add \
+        gcc \
+        make \
+        libc-dev \
+        cairo-dev \
+        poppler-dev
+
+RUN \
+    wget -O - https://github.com/dawbarton/pdf2svg/archive/v0.2.3.tar.gz | tar xzv && \
+    cd pdf2svg-0.2.3 && \
+    ./configure && \
+    make && \
+    make install
+
+
+
+FROM frolvlad/alpine-glibc:glibc-2.29  AS runtime
+
+RUN apk update && \
+    apk --no-cache add \
+        perl \
+        wget \
+        cairo-gobject \
+        poppler-glib \
+        xz \
+        fontconfig
+      # msttcorefonts-installer
+
+RUN apk add -U --repository http://dl-3.alpinelinux.org/alpine/edge/community \
+    font-overpass
+
+# RUN update-ms-fonts
+
+
+WORKDIR /root
+RUN wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh
+
+COPY --from=build /usr/local/bin/pdf2svg /usr/local/bin
+
+
+
+RUN ln -s /root/bin/* /usr/local/bin
+
+# Install TeX packages
+# collection-fontsrecommended \
+RUN  tlmgr install luatex \
+                   pgf \
+                   parskip \
+                   enumitem \
+                   tabu \
+                   textpos \
+                   biblatex \
+                   microtype
+
+
+RUN fc-cache -f &&  rm -fR /usr/share/texmf-dist/doc /doc/usr/share/texmf-dist/source /var/cache/*

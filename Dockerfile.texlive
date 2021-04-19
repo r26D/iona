@@ -1,0 +1,21 @@
+FROM alpine:3.13.5
+MAINTAINER Dirk Elmendorf dirk@jobward.app
+
+# Based on https://github.com/mattmahn/docker-latex/
+# Original License The Unlicense
+#A license with no conditions whatsoever which dedicates works to the public domain. Unlicensed works, modifications, and larger works may be distributed under different terms and without source code.
+
+#This docker image can get very big(>3GB)
+#The advantage is that it installs a lot of tools for you automatically
+
+
+RUN apk add -U make poppler harfbuzz-icu zziplib
+
+RUN apk add  --no-cache biber
+RUN apk add  --no-cache texlive-full
+
+RUN rm -rf /var/cache/apk/*
+#RUN apk add -U --repository http://dl-3.alpinelinux.org/alpine/edge/testing \
+#    texlive-full
+
+RUN ln -s /usr/bin/mktexlsr /usr/bin/mktexlsr.pl

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -e
+BASEDIR=$(dirname "$0/")
+#exec $BASEDIR/github_secret.sh "$1"
+
+
+export PACKAGE_VERSION="v1.0"
+export NO_CACHE=${NO_CACHE:-""}
+export IONA_DOCKER_REGISTRY=${IONA_DOCKER_REGISTRY:-"iona"}
+export IONA_TINYTEX_PACKAGE_NAME=${IONA_TINYTEX_PACKAGE_NAME:-"tinytex"}
+export IONA_TEXLIVE_PACKAGE_NAME=${IONA_TEXLIVE_PACKAGE_NAME:-"texlive"}
+
+#docker build $NO_CACHE -t $IONA_DOCKER_REGISTRY/$IONA_TEXLIVE_PACKAGE_NAME:latest \
+#                       -t $IONA_DOCKER_REGISTRY/$IONA_TEXLIVE_PACKAGE_NAME:$PACKAGE_VERSION \
+#                      -f $BASEDIR/../Dockerfile.texlive $BASEDIR/..
+
+docker build $NO_CACHE -t $IONA_DOCKER_REGISTRY/$IONA_TINYTEX_PACKAGE_NAME:latest \
+                       -t $IONA_DOCKER_REGISTRY/$IONA_TINYTEX_PACKAGE_NAME:$PACKAGE_VERSION \
+                      -f $BASEDIR/../Dockerfile.tinytex $BASEDIR/..
+
+
+#docker push $IONA_DOCKER_REGISTRY/$IONA_TINYTEX_PACKAGE_NAME:latest
+#docker push $IONA_DOCKER_REGISTRY/$IONA_TINYTEX_PACKAGE_NAME:${PACKAGE_VERSION}
+#docker push $IONA_DOCKER_REGISTRY/$IONA_TEXLIVE_PACKAGE_NAME:latest
+#docker push $IONA_DOCKER_REGISTRY/$IONA_TEXLIVE_PACKAGE_NAME:${PACKAGE_VERSION}

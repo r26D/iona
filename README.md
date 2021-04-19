@@ -16,6 +16,9 @@ Document generation from Elixir, using LaTeX.
 * Preprocessing support (multiple runs for bibliographies, etc)
 * Optionally generating a prepared directory with a `build.sh` script for final
   processing.
+* Able to use docker to provide acesss to latex
+* Support for luatex as a processor
+
 
 ## Prerequisites
 
@@ -44,7 +47,7 @@ and published on [HexDocs](https://hexdocs.pm). The docs can be found at
 
 ## LaTeX
 
-Of course you need a TeX system installed, including `latex`, `pdflatex`,
+Of course, you need a TeX system installed, including `latex`, `pdflatex`,
 or any other variants you'd like to use to process your `.tex` source into final
 documents. (The default configuration assumes `pdflatex` is installed for PDF
 generation and `latex` is installed for DVI generation. See "Configuration," below.)
