@@ -6,8 +6,14 @@ MAINTAINER Dirk Elmendorf dirk@jobward.app
 
 #This docker image is small - (~400MB)
 #kpsewhich -var-value=TEXMFHOME
-#/root/.TinyTeX/texmf-local/tex/latex/local/ <- can be overriding to add in external classes
+#/home/tinytex/.TinyTeX/texmf-local/tex/latex/local/ <- can be overriding to add in external classes
 
+#Change Log
+#v1.2
+#    * Added in a tinytex user for the process
+#    * added in MSFonts, plex, and droid fonts
+#    * addd in a lualatex wrapper to handle how the stdio is called from elixir
+#v1.1 - first version
 WORKDIR /root
 
 RUN apk update \
@@ -28,35 +34,56 @@ RUN \
 
 
 FROM frolvlad/alpine-glibc:glibc-2.29  AS runtime
+#DJE - there is a bug in the way this is handled - waiting for a merge
+#ENV TINYTEX_VERSION="2021.04"
 
 RUN apk update && \
     apk --no-cache add \
         perl \
         wget \
+        xz \
+        gnupg \
+        tar \
+        fontconfig \
+        freetype \
+        lua \
         cairo-gobject \
         poppler-glib \
-        xz \
-        fontconfig
-      # msttcorefonts-installer
+	    ttf-droid  && \
+    apk add -U --repository http://dl-3.alpinelinux.org/alpine/edge/community \
+        font-overpass \
+        font-ibm-plex-nerd  && \
+    fc-cache -f
 
-RUN apk add -U --repository http://dl-3.alpinelinux.org/alpine/edge/community \
-    font-overpass
+RUN    addgroup -S tinytex -g 1000 && \
+    adduser -S tinytex -G tinytex -u 1000
 
-# RUN update-ms-fonts
+#        msttcorefonts-installer && \
+#     update-ms-fonts
 
-
-WORKDIR /root
-RUN wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh
 
 COPY --from=build /usr/local/bin/pdf2svg /usr/local/bin
+USER tinytex
+WORKDIR /home/tinytex
+ENV PATH=/home/tinytex/bin:/home/tinytex/.TinyTeX/bin/x86_64-linux/::$PATH
+ENV TINYTEX_INSTALLER_DIR=/home/tinytex/tinytex_installer
+
+RUN  mkdir -p ${TINYTEX_INSTALLER_DIR} &&  \
+     wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh"  | TMPDIR=${TINYTEX_INSTALLER_DIR} sh
 
 
 
-RUN ln -s /root/bin/* /usr/local/bin
+
+# Add on packages
+USER tinytex
+WORKDIR /home/tinytex
+
+RUN /home/tinytex/.TinyTeX/bin/*/tlmgr path add
+COPY lualatex_wrapper.sh bin/lualatex_wrapper
 
 # Install TeX packages
 # collection-fontsrecommended \
-RUN  tlmgr install luatex \
+RUN  /home/tinytex/bin/tlmgr install luatex \
                    pgf \
                    parskip \
                    enumitem \
@@ -65,5 +92,11 @@ RUN  tlmgr install luatex \
                    biblatex \
                    microtype
 
+#clean up deps
 
-RUN fc-cache -f &&  rm -fR /usr/share/texmf-dist/doc /doc/usr/share/texmf-dist/source /var/cache/*
+USER root
+  RUN   rm -fR /usr/share/texmf-dist/doc /doc/usr/share/texmf-dist/source /var/cache/* && \
+  apk del gnupg wget xz tar && \
+  rm -fR /tmp/* /home/tinytex_installer
+USER tinytex
+WORKDIR /home/tinytex
