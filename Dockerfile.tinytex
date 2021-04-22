@@ -97,6 +97,6 @@ RUN  /home/tinytex/bin/tlmgr install luatex \
 USER root
   RUN   rm -fR /usr/share/texmf-dist/doc /doc/usr/share/texmf-dist/source /var/cache/* && \
   apk del gnupg wget xz tar && \
-  rm -fR /tmp/* /home/tinytex_installer
+  rm -fR /tmp/* /home/tinytex/tinytex_installer
 USER tinytex
 WORKDIR /home/tinytex
