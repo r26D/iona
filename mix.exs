@@ -36,7 +36,8 @@ defmodule Iona.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      {:briefly, "~> 0.3"},
+     {:briefly, git: "https://github.com/r26d/briefly", branch: "master"},
+      #{:briefly, "~> 0.3"},
       {:dialyxir, "~> 1.0-rc", only: [:dev], runtime: false},
       {:ex_doc, ">= 0.0.0", only: [:dev]},
       {:credo, "~> 1.5.5", only: [:dev], runtime: false}
