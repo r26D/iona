@@ -56,5 +56,6 @@
     <orderEntry type="library" name="assert_value" level="project" />
     <orderEntry type="library" name="stream_data" level="project" />
     <orderEntry type="library" name="file_system" level="project" />
+    <orderEntry type="library" name="Elixir 1.12.2-otp-24" level="application" />
   </component>
 </module>
